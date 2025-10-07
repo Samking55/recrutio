@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, StatusBar, Image } from "react-native";
 import defaultStyle from "../../assets/styles/default";
 import colors from "../../assets/styles/colors";
 import { TextInput } from "react-native";
@@ -8,6 +8,9 @@ import Feather from "@expo/vector-icons/Feather";
 import Loader from "../../components/loader";
 import { router } from "expo-router";
 import Separator from "../../components/separator";
+import * as SecureStore from "expo-secure-store";
+import logo from "../../assets/images/recrutio-logo03.jpg";
+
 
 function SignUpFormContainer() {
   const [showPin, setShowPin] = useState(false);
@@ -16,7 +19,7 @@ function SignUpFormContainer() {
   return (
     <>
       {/* form container */}
-      <View style={{ marginTop: 70 }}>
+      <View style={{ marginTop: 30 }}>
         {/*email input */}
         <View style={formStyle.inputContainer}>
           <MaterialCommunityIcons
@@ -122,41 +125,84 @@ function SignUpFormContainer() {
 }
 
 function SignupScreen() {
-  const [showPin, setShowPin] = useState(false);
-  const [showConFirmationPin, setShowConFirmationPin] = useState(false);
+  
+
 
   return (
-    <View style={defaultStyle.container}>
-      {/* title */}
-      <Text
+    <>
+      <StatusBar hidden />
+      <View
         style={{
-          ...defaultStyle.h1,
-          ...{
-            margin: 20,
-          },
+          height: 190,
+          width: 190,
+          borderRadius: 100,
+          backgroundColor: colors.main,
+          position: "absolute",
+          top: -70,
+          left: -70,
+          opacity: 0.6,
         }}
-      >
-        Creez un nouveau compte
-      </Text>
+      ></View>
+      <View
+        style={{
+          height: 190,
+          width: 190,
+          borderRadius: 100,
+          backgroundColor: colors.main,
+          position: "absolute",
+          bottom: -60,
+          right: -80,
+          opacity: 0.6,
+        }}
+      ></View>
+       {/* logo */}
+      <Image source={logo} style={{
+        width: 70,
+        height: 70,
+        position: 'absolute',
+        right: 30,
+        opacity: .7,
+        borderRadius: 100,
+        top: 50
+      }} />
+      <View style={defaultStyle.container}>
+        <View
+          style={{
+            marginTop: 130,
+          }}
+        >
+          {/* title */}
+          <Text
+            style={{
+              ...defaultStyle.h1,
+              ...{
+                marginVertical: 10,
+              },
+            }}
+          >
+            Creez un nouveau compte
+          </Text>
 
-      {/* form component */}
-      <SignUpFormContainer />
-      {/* end signup component */}
-      <Separator text="Ou" />
-       {/* login option */}
-        <View>
-          <Pressable onPress={() => router.replace("/(auth)/")}>
-            <Text
-              style={{
-                color: colors.main,
-                textAlign: "center",
-              }}
-            >
-              Se connecter
-            </Text>
-          </Pressable>
+          {/* form component */}
+          <SignUpFormContainer />
+          {/* end signup component */}
+          <Separator text="Ou" />
+          {/* login option */}
+          <View>
+            <Pressable onPress={() => router.replace("/(auth)/")}>
+              <Text
+                style={{
+                  color: colors.main,
+                  textAlign: "center",
+                }}
+              >
+                Se connecter
+              </Text>
+            </Pressable>
+          </View>
         </View>
-    </View>
+      </View>
+    </>
   );
 }
 

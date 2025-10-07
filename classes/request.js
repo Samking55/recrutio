@@ -1,22 +1,34 @@
 // handle all type of request
 
+// import SecureStore from "expo-secure-store";
+import * as SecureStore from "expo-secure-store";
+
 class RequestHandler {
-  __construct(baseUrl) {
+  constructor(baseUrl) {
     this.baseUrl = baseUrl;
+  }
+
+  // load token
+  async loadToken() {
+    const token = await SecureStore.getItemAsync("auth_token");
+    return token;
   }
 
   //   handle get request with the path
   async get({ path }) {
+    const token = await this.loadToken();
+
     const request = await fetch(`${this.baseUrl}/${path}`, {
       headers: {
         Accept: "application/json",
+        Authorization: `Bearer ${token}`,
       },
       method: "GET",
     });
     const response = await request.json();
     if (!request.ok) {
       throw {
-        error: response.error,
+        message: response.error || response.message,
         status_code: request.status,
       };
     }
@@ -26,10 +38,14 @@ class RequestHandler {
 
   //   post method
   async post({ path, body }) {
+    // load token
+    const token = await this.loadToken();
+
     const request = await fetch(`${this.baseUrl}/${path}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
       method: "POST",
@@ -37,7 +53,7 @@ class RequestHandler {
     const response = await request.json();
     if (!request.ok) {
       throw {
-        error: response.error,
+        message: response.error || response.message,
         status_code: request.status,
       };
     }
@@ -47,10 +63,14 @@ class RequestHandler {
 
   //   put method
   async put({ path, body }) {
+    // load token
+    const token = await this.loadToken();
+
     const request = await fetch(`${this.baseUrl}/${path}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
       method: "PUT",
@@ -58,7 +78,7 @@ class RequestHandler {
     const response = await request.json();
     if (!request.ok) {
       throw {
-        error: response.error,
+        message: response.error || response.message,
         status_code: request.status,
       };
     }
@@ -68,10 +88,14 @@ class RequestHandler {
 
   //   pacth method
   async patch({ path, body }) {
+    // load token
+    const token = await this.loadToken();
+
     const request = await fetch(`${this.baseUrl}/${path}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
       method: "PATCH",
@@ -79,7 +103,7 @@ class RequestHandler {
     const response = await request.json();
     if (!request.ok) {
       throw {
-        error: response.error,
+        message: response.error || response.message,
         status_code: request.status,
       };
     }
@@ -89,10 +113,14 @@ class RequestHandler {
 
   //   delete method
   async delete({ path }) {
+    // load token
+    const token = await this.loadToken();
+
     const request = await fetch(`${this.baseUrl}/${path}`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
 
       method: "DELETE",
@@ -100,7 +128,7 @@ class RequestHandler {
     const response = await request.json();
     if (!request.ok) {
       throw {
-        error: response.error,
+        message: response.error || response.message,
         status_code: request.status,
       };
     }
@@ -108,3 +136,5 @@ class RequestHandler {
     return response;
   }
 }
+
+export default RequestHandler;

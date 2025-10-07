@@ -1,10 +1,14 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import colors from "@/assets/styles/colors";
 import defaultStyle from "@/assets/styles/default";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import AuthContext from "@/context/AuthContext";
 import { useContext, useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
+import AuthApi from "../../api/authapi";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "../../components/loader";
 
 function ProfileOptions() {
   const options = [
@@ -55,7 +59,7 @@ function ProfileOptions() {
           }}
           onPress={() => router.navigate(option.url)}
         >
-          <Text style={{ fontWeight: "bold" }}> {option.label} </Text>
+          <Text style={{ fontWeight: "400" }}> {option.label} </Text>
           <Entypo name="chevron-right" size={20} color="black" />
         </TouchableOpacity>
       ))}
@@ -64,18 +68,47 @@ function ProfileOptions() {
 }
 
 function ProfileScreen() {
-  const { isAuth } = useContext(AuthContext);
+  const { isAuth, setIsAuth } = useContext(AuthContext);
 
   useEffect(() => {
     if (!isAuth) {
-      router.replace("/(auth)"); 
+      router.replace("/(auth)");
     }
   }, [isAuth]);
 
+  // check if user logged in
+  useEffect(() => {
+    AuthApi.isLoggedIn().then((loggedIn) => {
+      if (loggedIn) {
+        setIsAuth(true);
+      } else {
+        setIsAuth(false);
+      }
+    });
+  });
+
+  // get user info
+  const {
+    data: userInfo,
+    isPending: userInfoPending,
+    isError: userInfoIsError,
+    error: UserInfoError,
+  } = useQuery({
+    queryKey: ["UserInfo"],
+    queryFn: () => AuthApi.userInfo(),
+    enabled: isAuth,
+  });
+
+  if (userInfoIsError && UserInfoError?.status_code == 401) {
+    AuthApi.deleteToken().then(() => {
+      setIsAuth(false);
+    });
+  }
+  
+  if (userInfoPending) return <Loader />;
   return (
     <View style={defaultStyle.container}>
       {/* display card for default user info */}
-
       <View
         style={{
           backgroundColor: colors.white,
@@ -126,9 +159,9 @@ function ProfileScreen() {
               textAlign: "center",
             }}
           >
-            Samuel Luc
+            {userInfo?.first_name} {userInfo?.second_name}
           </Text>
-          {/* user role */}
+          {/* user email */}
           <Text
             style={{
               textAlign: "center",
@@ -136,12 +169,36 @@ function ProfileScreen() {
               marginTop: 2,
             }}
           >
-            Employé chez lui même
+            {userInfo?.email}
           </Text>
         </View>
       </View>
-
       <ProfileOptions />
+      {/* logout button */}
+      <View
+        style={{
+          marginTop: 40,
+        }}
+      >
+        <Pressable
+          style={{
+            marginHorizontal: 40,
+            paddingVertical: 10,
+            backgroundColor: colors.white,
+            borderRadius: 100,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: colors.main,
+              fontWeight: "600",
+            }}
+          >
+            Deconnexion
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

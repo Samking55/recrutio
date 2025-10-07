@@ -4,7 +4,7 @@
     "slug": "recrutio",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/recrutio-logo03.jpg",
     "scheme": "recrutio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,27 +13,27 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#0d9482",
+        "foregroundImage": "./assets/images/recrutio-logo03.jpg",
+        "backgroundImage": "./assets/images/recrutio-logo03.jpg",
+        "monochromeImage": "./assets/images/recrutio-logo03.jpg"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/recrutio-logo03.jpg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/recrutio-logo03.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0d9482",
           "dark": {
             "backgroundColor": "#000000"
           }

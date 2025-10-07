@@ -8,21 +8,12 @@ export default function AuthLayout() {
       screenOptions={{
         headerShadowVisible: false,
         headerBackVisible: false,
-        headerTintColor: colors.main
+        headerTintColor: colors.main,
+        headerShown: false
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Connexion",
-        }}
-      />
-      <Stack.Screen
-        name="sign-up"
-        options={{
-          title: "Inscription",
-        }}
-      />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="sign-up" />
     </Stack>
   );
 }

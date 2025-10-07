@@ -1,17 +1,29 @@
 import { Stack } from "expo-router";
 import { AuthContextProvider } from "@/context/AuthContext";
+import { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import colors from "@/assets/styles/colors";
+import { View } from "react-native";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
-    <AuthContextProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="(main)" />
-        <Stack.Screen name="(profile)" />
-      </Stack>
-    </AuthContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthContextProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.main,
+            },
+          }}
+        >
+          <Stack.Screen name="(main)" />
+          <Stack.Screen name="(profile)" />
+          <Stack.Screen name="(auth)" />
+        </Stack>
+      </AuthContextProvider>
+    </QueryClientProvider>
   );
 }
