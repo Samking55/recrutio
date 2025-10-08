@@ -1,25 +1,123 @@
-import { View, Text, Pressable, StyleSheet, StatusBar, Image } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  StatusBar,
+  Image,
+  KeyboardAvoidingView,
+  Vibration,
+} from "react-native";
 import defaultStyle from "../../assets/styles/default";
 import colors from "../../assets/styles/colors";
 import { TextInput } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import Loader from "../../components/loader";
 import { router } from "expo-router";
 import Separator from "../../components/separator";
-import * as SecureStore from "expo-secure-store";
 import logo from "../../assets/images/recrutio-logo03.jpg";
-
+import { useMutation } from "@tanstack/react-query";
+import AuthApi from "../../api/authapi"
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 function SignUpFormContainer() {
   const [showPin, setShowPin] = useState(false);
   const [showConFirmationPin, setShowConFirmationPin] = useState(false);
 
+  // typing inputs
+  const [typedFirstName, setTypedFirstName] = useState("");
+  const [typedSecondName, setTypedSecondName] = useState("");
+  const [typedEmail, setTypedEmail] = useState("");
+  const [typedPin, setTypedPin] = useState("");
+  const [typedConfirmationPin, setTypedConfirmationPin] = useState("");
+
+  // submission mutation
+  const signUpMutation = useMutation({
+    mutationKey: ["signUpUser"],
+    mutationFn: ({
+      first_name,
+      second_name,
+      email,
+      password,
+      password_confirmation,
+    }) =>
+      AuthApi.signUp({
+        first_name,
+        second_name,
+        email,
+        password,
+        password_confirmation,
+      }),
+  });
+
+  // handle submission
+  const submitSignUpForm = () => {
+    if (
+      !typedFirstName ||
+      !typedSecondName ||
+      !typedEmail ||
+      !typedPin ||
+      !typedConfirmationPin
+    ) {
+      alert("Vous devez remplir tous les champs");
+      Vibration.vibrate();
+      return null;
+    }
+
+    // mutate form
+    signUpMutation.mutate({
+      first_name: typedFirstName,
+      second_name: typedSecondName,
+      email: typedEmail,
+      password: typedPin,
+      password_confirmation: typedConfirmationPin,
+    });
+  };
+
+  // handle response state
+  useEffect(() => {
+    // handle success state
+    if (signUpMutation.isSuccess) {
+      console.log("Signup mutation sent a good response")
+      console.log(signUpMutation.data);
+    }
+
+    // handle failed state
+    if (signUpMutation.isError) {
+      console.log("Signup mutation has encountered an error")
+      console.log(signUpMutation.error);
+    }
+  }, [signUpMutation.isSuccess, signUpMutation.isError]);
+
+  // form login state
+  if (signUpMutation.isPending) return <Loader />;
   return (
     <>
       {/* form container */}
-      <View style={{ marginTop: 30 }}>
+      <KeyboardAvoidingView style={{ marginTop: 10 }}>
+        {/* first name input */}
+        <View style={formStyle.inputContainer}>
+          <Ionicons name="person-outline" size={20} style={formStyle.icon} />
+          <TextInput
+            placeholder="Entrez votre nom"
+            inputMode="text"
+            style={formStyle.input}
+            onChangeText={setTypedFirstName}
+          />
+        </View>
+        {/* second name input */}
+        <View style={formStyle.inputContainer}>
+          <Ionicons name="person-outline" size={20} style={formStyle.icon} />
+          <TextInput
+            placeholder="Entrez votre prenom"
+            inputMode="text"
+            style={formStyle.input}
+            onChangeText={setTypedSecondName}
+          />
+        </View>
+
         {/*email input */}
         <View style={formStyle.inputContainer}>
           <MaterialCommunityIcons
@@ -32,6 +130,7 @@ function SignUpFormContainer() {
             keyboardType="email-address"
             autoCapitalize="none"
             style={formStyle.input}
+            onChangeText={setTypedEmail}
           />
         </View>
         {/* code pin input */}
@@ -43,8 +142,9 @@ function SignUpFormContainer() {
             maxLength={6}
             secureTextEntry={!showPin}
             style={formStyle.input}
-            onChangeText={() => {
+            onChangeText={(value) => {
               setShowPin(false);
+              setTypedPin(value);
             }}
           />
           {showPin ? (
@@ -64,7 +164,7 @@ function SignUpFormContainer() {
           )}
         </View>
 
-        {/* confirmation pin inpit */}
+        {/* confirmation pin input */}
         <View style={formStyle.inputContainer}>
           <Feather name="lock" size={20} style={formStyle.icon} />
           <TextInput
@@ -73,8 +173,9 @@ function SignUpFormContainer() {
             maxLength={6}
             secureTextEntry={!showConFirmationPin}
             style={formStyle.input}
-            onChangeText={() => {
+            onChangeText={(value) => {
               setShowConFirmationPin(false);
+              setTypedConfirmationPin(value);
             }}
           />
           {showConFirmationPin ? (
@@ -107,6 +208,7 @@ function SignUpFormContainer() {
               alignItems: "center",
               borderRadius: 100,
             }}
+            onPress={submitSignUpForm}
           >
             <Text
               style={{
@@ -119,15 +221,12 @@ function SignUpFormContainer() {
           </Pressable>
         </View>
         {/* end submit button */}
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 }
 
 function SignupScreen() {
-  
-
-
   return (
     <>
       <StatusBar hidden />
@@ -155,20 +254,23 @@ function SignupScreen() {
           opacity: 0.6,
         }}
       ></View>
-       {/* logo */}
-      <Image source={logo} style={{
-        width: 70,
-        height: 70,
-        position: 'absolute',
-        right: 30,
-        opacity: .7,
-        borderRadius: 100,
-        top: 50
-      }} />
+      {/* logo */}
+      <Image
+        source={logo}
+        style={{
+          width: 70,
+          height: 70,
+          position: "absolute",
+          right: 30,
+          opacity: 0.7,
+          borderRadius: 100,
+          top: 50,
+        }}
+      />
       <View style={defaultStyle.container}>
         <View
           style={{
-            marginTop: 130,
+            marginTop: 80,
           }}
         >
           {/* title */}

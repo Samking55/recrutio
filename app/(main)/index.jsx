@@ -56,7 +56,7 @@ export default function HomeScreen() {
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2} 
-      columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 20 }}
+      columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 13 }}
       contentContainerStyle={{ padding: 14 }}
       ListHeaderComponent={
         <>
@@ -79,6 +79,7 @@ export default function HomeScreen() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            marginBottom: 70
           }}
         >
           <Pressable

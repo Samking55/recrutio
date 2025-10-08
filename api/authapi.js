@@ -1,18 +1,20 @@
 import RequestHandler from "../classes/request";
 import * as SecureStore from "expo-secure-store";
 
-const request = new RequestHandler("http://192.168.1.192:8000/api/v1/");
+const request = new RequestHandler("http://192.168.1.192:8000/api/v1");
 
 const AuthApi = {
   // register method
-  signUp: async ({ email, password, password_confirmation }) => {
+  signUp: async ({
+    first_name,
+    second_name,
+    email,
+    password,
+    password_confirmation,
+  }) => {
     return await request.post({
       path: "signup",
-      body: {
-        email,
-        password,
-        password_confirmation,
-      },
+      body: { first_name, second_name, email, password, password_confirmation },
     });
   },
 
@@ -30,7 +32,7 @@ const AuthApi = {
   //   logout user
   signOut: async () => {
     return await request.post({
-      path: "signout"
+      path: "signout",
     });
   },
 

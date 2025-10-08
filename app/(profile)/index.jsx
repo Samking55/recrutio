@@ -1,14 +1,22 @@
-import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Pressable,
+  ImageBackground,
+} from "react-native";
 import colors from "@/assets/styles/colors";
 import defaultStyle from "@/assets/styles/default";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import AuthContext from "@/context/AuthContext";
 import { useContext, useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
 import AuthApi from "../../api/authapi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Loader from "../../components/loader";
+import Logo from "../../assets/images/recrutio-logo03.jpg";
+import { UserRound, BriefcaseBusiness, FileText, File, Building2 } from "lucide-react-native";
 
 function ProfileOptions() {
   const options = [
@@ -16,35 +24,72 @@ function ProfileOptions() {
       id: 1,
       label: "Mes informations personnelles",
       url: "/(profile)/personnal-info",
+      icon: (
+        <UserRound
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
     },
     {
       id: 2,
       label: "Mes informations professionnelles",
       url: "/(profile)/job-info",
+      icon: (
+        <BriefcaseBusiness
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
     },
     {
       id: 3,
       label: "Mes demandes d'emploi",
       url: "/(profile)/job-application",
+      icon: (
+        <FileText
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
     },
     {
       id: 4,
       label: "Mon CV",
       url: "/(profile)/job-info",
+      icon: (
+        <File
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
     },
     {
       id: 5,
       label: "Mes recruteurs",
       url: "/(profile)/job-info",
+      icon: (
+        <Building2
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
     },
   ];
   return (
     <View
       style={{
-        backgroundColor: colors.white,
         padding: 13,
-        borderRadius: 10,
-        marginTop: 30,
       }}
     >
       {options.map((option) => (
@@ -54,13 +99,24 @@ function ProfileOptions() {
             marginVertical: 3,
             paddingVertical: 9,
             display: "flex",
-            justifyContent: "space-between",
             flexDirection: "row",
+            alignItems: "center",
           }}
           onPress={() => router.navigate(option.url)}
         >
-          <Text style={{ fontWeight: "400" }}> {option.label} </Text>
-          <Entypo name="chevron-right" size={20} color="black" />
+          {option?.icon}
+          <Text style={{ fontWeight: "400", display: "flex" }}>
+            {option.label}
+          </Text>
+          <Entypo
+            name="chevron-right"
+            size={20}
+            color="black"
+            style={{
+              position: "absolute",
+              right: 10,
+            }}
+          />
         </TouchableOpacity>
       ))}
     </View>
@@ -76,108 +132,161 @@ function ProfileScreen() {
     }
   }, [isAuth]);
 
-  // check if user logged in
-  useEffect(() => {
-    AuthApi.isLoggedIn().then((loggedIn) => {
-      if (loggedIn) {
-        setIsAuth(true);
-      } else {
-        setIsAuth(false);
-      }
-    });
-  });
-
-  // get user info
+  // get user info query
   const {
     data: userInfo,
     isPending: userInfoPending,
+    isSuccess: userInfoIsSuccess,
     isError: userInfoIsError,
-    error: UserInfoError,
+    error: userInfoError,
   } = useQuery({
     queryKey: ["UserInfo"],
-    queryFn: () => AuthApi.userInfo(),
-    enabled: isAuth,
+    queryFn: AuthApi.userInfo,
+    enabled: isAuth, //enable the request only if the user is auth
+    retry: false,
   });
 
-  if (userInfoIsError && UserInfoError?.status_code == 401) {
-    AuthApi.deleteToken().then(() => {
-      setIsAuth(false);
-    });
-  }
-  
+  // handle user info response state
+  useEffect(() => {
+    // handle success
+    if (userInfoIsSuccess) {
+      console.log("User is logged in");
+      console.log(userInfo);
+      console.log("Is auth:", isAuth);
+    }
+
+    // handle error
+    if (userInfoIsError && userInfoError?.status_code === 401) {
+      console.log("UserInfo is not auth");
+      AuthApi.getToken().then((token) => {
+        console.log(
+          "Checking token in userInfo useEffect and will be displayed in the following line"
+        );
+        console.log(token);
+      });
+      AuthApi.deleteToken().then(() => {
+        setIsAuth(false);
+      });
+    }
+
+    // check any error
+    if (userInfoIsError) {
+      // console.log error for debugging
+      console.log(
+        "An error occured in the userInfo useEffect and it is gonna be displayed on the following line"
+      );
+      console.log("User auth state", isAuth);
+      console.log(userInfoError);
+    }
+  }, [userInfoIsError, userInfoIsSuccess]);
+
+  // signout mutation
+  const signOutMutation = useMutation({
+    mutationKey: ["LogoutUser"],
+    mutationFn: AuthApi.signOut,
+  });
+
+  // signout mutation function
+  const handleSignout = () => {
+    signOutMutation.mutate();
+  };
+
+  // handle signout state
+  useEffect(() => {
+    if (signOutMutation.isSuccess) {
+      console.log("User logged out message is");
+      console.log(signOutMutation.data);
+      AuthApi.deleteToken().then(() => {
+        setIsAuth(false);
+      });
+    }
+
+    // handle signout error
+    if (signOutMutation.isError) {
+      console.log("Error signing out");
+      console.log(signOutMutation.error);
+
+      // handle unauthenticated errors
+      if (signOutMutation.error.status_code === 401) {
+        AuthApi.deleteToken().then(() => {
+          setIsAuth(false);
+        });
+      }
+    }
+  }, [signOutMutation.isError, signOutMutation.isSuccess]);
+
+  // handle user info and pending state
   if (userInfoPending) return <Loader />;
+
+  // display loader on signout pending
+  if (signOutMutation.isPending) return <Loader />;
+
   return (
-    <View style={defaultStyle.container}>
-      {/* display card for default user info */}
+    <View>
+      {/* background card*/}
+      <ImageBackground
+        source={Logo}
+        style={{
+          height: 230,
+          filter: "brightness(.6)",
+        }}
+      />
       <View
         style={{
+          height: 450,
           backgroundColor: colors.white,
-          padding: 15,
+          top: -140,
+          marginHorizontal: 15,
+          elevation: 6,
           borderRadius: 10,
-          display: "flex",
-          alignItems: "center",
         }}
       >
+        {/* profile image  */}
+        <View
+          style={{
+            display: "flex",
+            alignItems: "center",
+            paddingVertical: 13,
+          }}
+        >
+          {userInfo?.profile_pic_url ? (
+            <Image
+              src={userInfo?.profile_pic_url}
+              style={{
+                height: 90,
+                width: 90,
+                borderRadius: 100,
+              }}
+            />
+          ) : (
+            <Image
+              source={Logo}
+              style={{
+                height: 90,
+                width: 90,
+                borderRadius: 100,
+              }}
+            />
+          )}
+        </View>
+        {/* user name */}
         <Text
           style={{
-            fontWeight: "bold",
+            textAlign: "center",
             fontSize: 18,
-            marginBottom: 10,
+            fontWeight: "600",
           }}
         >
-          Mon profil
+          {userInfo?.first_name} {userInfo?.second_name}
         </Text>
-        {/* profile pic container  */}
-        <View
-          style={{
-            height: 90,
-            width: 90,
-            borderRadius: 100,
-          }}
-        >
-          <Image
-            src="https://images.pexels.com/photos/31110329/pexels-photo-31110329.jpeg?_gl=1*1rinhxh*_ga*MTUyMDM0NzgwNC4xNzU3NDU2OTQx*_ga_8JE65Q40S6*czE3NTk2MDg0NjMkbzEzJGcxJHQxNzU5NjA4NDg4JGozNSRsMCRoMA.."
-            style={{
-              height: 92,
-              width: 92,
-              borderRadius: 100,
-            }}
-          />
-        </View>
-        {/* end profile pic container */}
 
-        {/* user name container */}
-        <View
-          style={{
-            marginVertical: 10,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: "600",
-              textAlign: "center",
-            }}
-          >
-            {userInfo?.first_name} {userInfo?.second_name}
-          </Text>
-          {/* user email */}
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 12,
-              marginTop: 2,
-            }}
-          >
-            {userInfo?.email}
-          </Text>
-        </View>
+        <ProfileOptions />
       </View>
-      <ProfileOptions />
+
       {/* logout button */}
       <View
         style={{
-          marginTop: 40,
+          top: -90,
         }}
       >
         <Pressable
@@ -187,6 +296,7 @@ function ProfileScreen() {
             backgroundColor: colors.white,
             borderRadius: 100,
           }}
+          onPress={handleSignout}
         >
           <Text
             style={{

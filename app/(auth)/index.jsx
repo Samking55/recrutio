@@ -19,12 +19,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import logo from "../../assets/images/recrutio-logo03.jpg";
 import { StatusBar } from "react-native";
 import AuthApi from "../../api/authapi";
-import * as SecureStore from "expo-secure-store";
 import AuthContext from "../../context/AuthContext";
+import { AtSign, Key, Eye, EyeOff } from "lucide-react-native";
 
-function LoginFormContainer() {
+function SignInFormContainer() {
   // context
-  const { isAuth, setIsAuth } = useContext(AuthContext);
+  const { setIsAuth } = useContext(AuthContext);
 
   const [showPin, setShowPin] = useState(false);
 
@@ -48,36 +48,26 @@ function LoginFormContainer() {
     });
   };
 
+  // handle signIn mutation response
   useEffect(() => {
+    // handle error login
     if (signInMutation.isError) {
+      console.log("Error received from the signIn mutation");
       console.log(signInMutation.error);
       Vibration.vibrate();
     }
 
+    // handle success logic
     if (signInMutation.isSuccess) {
       const data = signInMutation.data.response;
       const token = data.token;
+      console.log("Data successfully received");
       AuthApi.saveToken({ token }).then(() => {
+        console.log("Token saved and setting auth context to true");
         setIsAuth(true);
       });
     }
   }, [signInMutation.isError, signInMutation.isSuccess]);
-
-  // check user loggedin
-  useEffect(() => {
-    AuthApi.isLoggedIn().then((loggedIn) => {
-      if (loggedIn) {
-        setIsAuth(true);
-      } else {
-        setIsAuth(false);
-      }
-    });
-
-    // if user is connected redirect to profile page
-    if (isAuth) {
-      router.replace("/(profile)");
-    }
-  });
 
   return (
     <>
@@ -105,11 +95,7 @@ function LoginFormContainer() {
 
         {/* input */}
         <View style={formStyle.inputContainer}>
-          <MaterialCommunityIcons
-            name="email-open-outline"
-            size={20}
-            style={formStyle.icon}
-          />
+          <AtSign size={20} style={formStyle.icon} />
           <TextInput
             placeholder="Votre adresse email"
             keyboardType="email-address"
@@ -119,7 +105,7 @@ function LoginFormContainer() {
           />
         </View>
         <View style={formStyle.inputContainer}>
-          <Feather name="lock" size={20} style={formStyle.icon} />
+          <Key size={20} style={formStyle.icon} />
           <TextInput
             placeholder="Votre code pin"
             keyboardType="numeric"
@@ -132,19 +118,9 @@ function LoginFormContainer() {
             }}
           />
           {showPin ? (
-            <Feather
-              name="eye-off"
-              size={20}
-              color="black"
-              onPress={() => setShowPin(false)}
-            />
+            <EyeOff size={20} color="black" onPress={() => setShowPin(false)} />
           ) : (
-            <Feather
-              name="eye"
-              size={20}
-              color="black"
-              onPress={() => setShowPin(true)}
-            />
+            <Eye size={20} color="black" onPress={() => setShowPin(true)} />
           )}
         </View>
 
@@ -196,6 +172,25 @@ function LoginFormContainer() {
 Login screen
 */
 function LoginScreen() {
+  // context
+  const { isAuth, setIsAuth } = useContext(AuthContext);
+
+  // check user loggedin
+  useEffect(() => {
+    AuthApi.isLoggedIn().then((loggedIn) => {
+      if (!loggedIn) {
+        setIsAuth(false);
+      }
+    });
+  }, []);
+
+  // check if user is authenticated and redirect
+  useEffect(() => {
+    if (isAuth) {
+      router.replace("/(profile)");
+    }
+  }, [isAuth]);
+
   return (
     <>
       <StatusBar hidden />
@@ -248,7 +243,7 @@ function LoginScreen() {
           <Text style={defaultStyle.h1}>Connectez-vous</Text>
 
           {/* form container */}
-          <LoginFormContainer />
+          <SignInFormContainer />
           {/* end form container */}
           <Separator />
           {/* register option */}

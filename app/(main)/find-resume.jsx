@@ -1,7 +1,7 @@
 // display resume design template
 
-function FindResume(){
+function FindResumeScreen(){
     
 }
 
-export default FindResume;
+export default FindResumeScreen;
