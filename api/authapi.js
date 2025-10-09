@@ -39,7 +39,7 @@ const AuthApi = {
   // get user info
   userInfo: async () => {
     return await request.post({
-      path: "user",
+      path: "user/info",
     });
   },
 

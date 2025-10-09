@@ -1,7 +1,9 @@
 import { Tabs } from "expo-router";
 import colors from "../../assets/styles/colors";
+import { usePreventScreenCapture } from 'expo-screen-capture';
 
 function ProfileTabs() {
+  usePreventScreenCapture();
   return (
     <Tabs
       screenOptions={{

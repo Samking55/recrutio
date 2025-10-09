@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Pressable,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import colors from "@/assets/styles/colors";
 import defaultStyle from "@/assets/styles/default";
@@ -16,14 +17,20 @@ import AuthApi from "../../api/authapi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Loader from "../../components/loader";
 import Logo from "../../assets/images/recrutio-logo03.jpg";
-import { UserRound, BriefcaseBusiness, FileText, File, Building2 } from "lucide-react-native";
+import {
+  UserRound,
+  BriefcaseBusiness,
+  FileText,
+  File,
+  Building2,
+} from "lucide-react-native";
 
 function ProfileOptions() {
   const options = [
     {
       id: 1,
       label: "Mes informations personnelles",
-      url: "/(profile)/personnal-info",
+      url: "/(profile)/personal-info",
       icon: (
         <UserRound
           size={19}
@@ -140,7 +147,7 @@ function ProfileScreen() {
     isError: userInfoIsError,
     error: userInfoError,
   } = useQuery({
-    queryKey: ["UserInfo"],
+    queryKey: ["UserInfo", Date.now()],
     queryFn: AuthApi.userInfo,
     enabled: isAuth, //enable the request only if the user is auth
     retry: false,
@@ -222,7 +229,7 @@ function ProfileScreen() {
   if (signOutMutation.isPending) return <Loader />;
 
   return (
-    <View>
+    <ScrollView>
       {/* background card*/}
       <ImageBackground
         source={Logo}
@@ -233,7 +240,7 @@ function ProfileScreen() {
       />
       <View
         style={{
-          height: 450,
+          height: 460,
           backgroundColor: colors.white,
           top: -140,
           marginHorizontal: 15,
@@ -251,7 +258,7 @@ function ProfileScreen() {
         >
           {userInfo?.profile_pic_url ? (
             <Image
-              src={userInfo?.profile_pic_url}
+              src={userInfo?.response?.profile_pic_url}
               style={{
                 height: 90,
                 width: 90,
@@ -277,9 +284,18 @@ function ProfileScreen() {
             fontWeight: "600",
           }}
         >
-          {userInfo?.first_name} {userInfo?.second_name}
+          {userInfo?.response?.first_name} {userInfo?.response?.second_name}
         </Text>
 
+        {/* user email address */}
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 13,
+          }}
+        >
+          {userInfo?.response?.email}
+        </Text>
         <ProfileOptions />
       </View>
 
@@ -309,7 +325,7 @@ function ProfileScreen() {
           </Text>
         </Pressable>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

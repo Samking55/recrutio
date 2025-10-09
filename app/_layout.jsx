@@ -3,7 +3,6 @@ import { AuthContextProvider } from "@/context/AuthContext";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import colors from "@/assets/styles/colors";
-import { View } from "react-native";
 
 const queryClient = new QueryClient();
 

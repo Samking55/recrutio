@@ -7,6 +7,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Vibration,
+  Platform,
 } from "react-native";
 import defaultStyle from "../../assets/styles/default";
 import colors from "../../assets/styles/colors";
@@ -19,8 +20,8 @@ import { router } from "expo-router";
 import Separator from "../../components/separator";
 import logo from "../../assets/images/recrutio-logo03.jpg";
 import { useMutation } from "@tanstack/react-query";
-import AuthApi from "../../api/authapi"
-import Ionicons from '@expo/vector-icons/Ionicons';
+import AuthApi from "../../api/authapi";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function SignUpFormContainer() {
   const [showPin, setShowPin] = useState(false);
@@ -80,13 +81,13 @@ function SignUpFormContainer() {
   useEffect(() => {
     // handle success state
     if (signUpMutation.isSuccess) {
-      console.log("Signup mutation sent a good response")
+      console.log("Signup mutation sent a good response");
       console.log(signUpMutation.data);
     }
 
     // handle failed state
     if (signUpMutation.isError) {
-      console.log("Signup mutation has encountered an error")
+      console.log("Signup mutation has encountered an error");
       console.log(signUpMutation.error);
     }
   }, [signUpMutation.isSuccess, signUpMutation.isError]);
@@ -96,132 +97,130 @@ function SignUpFormContainer() {
   return (
     <>
       {/* form container */}
-      <KeyboardAvoidingView style={{ marginTop: 10 }}>
-        {/* first name input */}
-        <View style={formStyle.inputContainer}>
-          <Ionicons name="person-outline" size={20} style={formStyle.icon} />
-          <TextInput
-            placeholder="Entrez votre nom"
-            inputMode="text"
-            style={formStyle.input}
-            onChangeText={setTypedFirstName}
-          />
-        </View>
-        {/* second name input */}
-        <View style={formStyle.inputContainer}>
-          <Ionicons name="person-outline" size={20} style={formStyle.icon} />
-          <TextInput
-            placeholder="Entrez votre prenom"
-            inputMode="text"
-            style={formStyle.input}
-            onChangeText={setTypedSecondName}
-          />
-        </View>
-
-        {/*email input */}
-        <View style={formStyle.inputContainer}>
-          <MaterialCommunityIcons
-            name="email-open-outline"
-            size={20}
-            style={formStyle.icon}
-          />
-          <TextInput
-            placeholder="Votre adresse email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            style={formStyle.input}
-            onChangeText={setTypedEmail}
-          />
-        </View>
-        {/* code pin input */}
-        <View style={formStyle.inputContainer}>
-          <Feather name="lock" size={20} style={formStyle.icon} />
-          <TextInput
-            placeholder="Votre code pin"
-            keyboardType="numeric"
-            maxLength={6}
-            secureTextEntry={!showPin}
-            style={formStyle.input}
-            onChangeText={(value) => {
-              setShowPin(false);
-              setTypedPin(value);
-            }}
-          />
-          {showPin ? (
-            <Feather
-              name="eye-off"
-              size={20}
-              color="black"
-              onPress={() => setShowPin(false)}
-            />
-          ) : (
-            <Feather
-              name="eye"
-              size={20}
-              color="black"
-              onPress={() => setShowPin(true)}
-            />
-          )}
-        </View>
-
-        {/* confirmation pin input */}
-        <View style={formStyle.inputContainer}>
-          <Feather name="lock" size={20} style={formStyle.icon} />
-          <TextInput
-            placeholder="Confirmez votre code pin"
-            keyboardType="numeric"
-            maxLength={6}
-            secureTextEntry={!showConFirmationPin}
-            style={formStyle.input}
-            onChangeText={(value) => {
-              setShowConFirmationPin(false);
-              setTypedConfirmationPin(value);
-            }}
-          />
-          {showConFirmationPin ? (
-            <Feather
-              name="eye-off"
-              size={20}
-              color="black"
-              onPress={() => setShowConFirmationPin(false)}
-            />
-          ) : (
-            <Feather
-              name="eye"
-              size={20}
-              color="black"
-              onPress={() => setShowConFirmationPin(true)}
-            />
-          )}
-        </View>
-
-        {/* submit button */}
-        <View
-          style={{
-            marginVertical: 20,
+      <View style={formStyle.inputContainer}>
+        <Ionicons name="person-outline" size={20} style={formStyle.icon} />
+        <TextInput
+          placeholder="Entrez votre nom"
+          inputMode="text"
+          style={formStyle.input}
+          onChangeText={setTypedFirstName}
+          autoCapitalize="words"
+        />
+      </View>
+      {/* second name input */}
+      <View style={formStyle.inputContainer}>
+        <Ionicons name="person-outline" size={20} style={formStyle.icon} />
+        <TextInput
+          placeholder="Entrez votre prenom"
+          inputMode="text"
+          style={formStyle.input}
+          onChangeText={setTypedSecondName}
+          autoCapitalize="words"
+        />
+      </View>
+      {/*email input */}
+      <View style={formStyle.inputContainer}>
+        <MaterialCommunityIcons
+          name="email-open-outline"
+          size={20}
+          style={formStyle.icon}
+        />
+        <TextInput
+          placeholder="Votre adresse email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          style={formStyle.input}
+          onChangeText={setTypedEmail}
+        />
+      </View>
+      {/* code pin input */}
+      <View style={formStyle.inputContainer}>
+        <Feather name="lock" size={20} style={formStyle.icon} />
+        <TextInput
+          placeholder="Votre code pin"
+          keyboardType="numeric"
+          maxLength={6}
+          secureTextEntry={!showPin}
+          style={formStyle.input}
+          onChangeText={(value) => {
+            setShowPin(false);
+            setTypedPin(value);
           }}
+        />
+        {showPin ? (
+          <Feather
+            name="eye-off"
+            size={20}
+            color="black"
+            onPress={() => setShowPin(false)}
+          />
+        ) : (
+          <Feather
+            name="eye"
+            size={20}
+            color="black"
+            onPress={() => setShowPin(true)}
+          />
+        )}
+      </View>
+
+      {/* confirmation pin input */}
+      <View style={formStyle.inputContainer}>
+        <Feather name="lock" size={20} style={formStyle.icon} />
+        <TextInput
+          placeholder="Confirmez votre code pin"
+          keyboardType="numeric"
+          maxLength={6}
+          secureTextEntry={!showConFirmationPin}
+          style={formStyle.input}
+          onChangeText={(value) => {
+            setShowConFirmationPin(false);
+            setTypedConfirmationPin(value);
+          }}
+        />
+        {showConFirmationPin ? (
+          <Feather
+            name="eye-off"
+            size={20}
+            color="black"
+            onPress={() => setShowConFirmationPin(false)}
+          />
+        ) : (
+          <Feather
+            name="eye"
+            size={20}
+            color="black"
+            onPress={() => setShowConFirmationPin(true)}
+          />
+        )}
+      </View>
+
+      {/* submit button */}
+      <View
+        style={{
+          marginVertical: 20,
+        }}
+      >
+        <Pressable
+          style={{
+            backgroundColor: colors.main,
+            padding: 13,
+            alignItems: "center",
+            borderRadius: 100,
+          }}
+          onPress={submitSignUpForm}
         >
-          <Pressable
+          <Text
             style={{
-              backgroundColor: colors.main,
-              padding: 13,
-              alignItems: "center",
-              borderRadius: 100,
+              color: colors.white,
+              fontSize: 15,
             }}
-            onPress={submitSignUpForm}
           >
-            <Text
-              style={{
-                color: colors.white,
-                fontSize: 15,
-              }}
-            >
-              Creer mon compte
-            </Text>
-          </Pressable>
-        </View>
-        {/* end submit button */}
-      </KeyboardAvoidingView>
+            Creer mon compte
+          </Text>
+        </Pressable>
+      </View>
+      {/* end submit button */}
     </>
   );
 }
