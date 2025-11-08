@@ -23,6 +23,7 @@ import {
   FileText,
   File,
   Building2,
+  LibraryBig
 } from "lucide-react-native";
 
 function ProfileOptions() {
@@ -54,6 +55,19 @@ function ProfileOptions() {
       ),
     },
     {
+      id: 6,
+      label: "Mes etudes & formations",
+      url: "/(profile)/education",
+      icon: (
+        <LibraryBig
+          size={19}
+          style={{
+            marginRight: 10,
+          }}
+        />
+      ),
+    },
+    {
       id: 3,
       label: "Mes demandes d'emploi",
       url: "/(profile)/job-application",
@@ -68,8 +82,8 @@ function ProfileOptions() {
     },
     {
       id: 4,
-      label: "Mon CV",
-      url: "/(profile)/job-info",
+      label: "Mes CV",
+      url: "/(profile)/resume",
       icon: (
         <File
           size={19}
@@ -82,7 +96,7 @@ function ProfileOptions() {
     {
       id: 5,
       label: "Mes recruteurs",
-      url: "/(profile)/job-info",
+      url: "/(profile)/recrutors",
       icon: (
         <Building2
           size={19}
@@ -92,6 +106,7 @@ function ProfileOptions() {
         />
       ),
     },
+    
   ];
   return (
     <View
@@ -284,7 +299,7 @@ function ProfileScreen() {
             fontWeight: "600",
           }}
         >
-          {userInfo?.response?.first_name} {userInfo?.response?.second_name}
+          {userInfo?.response?.last_name} {userInfo?.response?.first_name}
         </Text>
 
         {/* user email address */}

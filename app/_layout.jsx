@@ -16,6 +16,7 @@ export default function RootLayout() {
             headerStyle: {
               backgroundColor: colors.main,
             },
+            animation: "fade_from_bottom",
           }}
         >
           <Stack.Screen name="(main)" />

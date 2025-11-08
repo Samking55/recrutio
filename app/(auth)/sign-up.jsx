@@ -70,7 +70,7 @@ function SignUpFormContainer() {
     // mutate form
     signUpMutation.mutate({
       first_name: typedFirstName,
-      second_name: typedSecondName,
+      last_name: typedSecondName,
       email: typedEmail,
       password: typedPin,
       password_confirmation: typedConfirmationPin,

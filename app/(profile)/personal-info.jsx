@@ -15,7 +15,7 @@ function PersonalInfoScreen() {
 
   // input value list
   const [firstName, setFirstName] = useState();
-  const [secondName, setSecondName] = useState();
+  const [lastName, setLastName] = useState();
   const [email, setEmail] = useState();
   const [phone, setPhone] = useState();
   const [country, setCountry] = useState();
@@ -38,14 +38,14 @@ function PersonalInfoScreen() {
     if (isSuccess) {
       // console.log("User personnal info succeed", userInfo);
       setFirstName(userInfo.response.first_name);
-      setSecondName(userInfo.response.second_name);
+      setLastName(userInfo.response.last_name);
       setEmail(userInfo.response.email);
       setPhone(userInfo.response.phone);
       setCountry(userInfo.response.country);
       setCity(userInfo.response.city);
       setDescription(userInfo.response.description);
     }
-    if (isError) console.log("An error occured");
+    if (isError) console.log("An error occured within the personal info query");
   }, [isSuccess, isError]);
 
   // user update info mutation
@@ -61,7 +61,7 @@ function PersonalInfoScreen() {
     // udpate user info
     updateInfoMutation.mutate({
       first_name: firstName,
-      second_name: secondName,
+      last_name: lastName,
       email: email,
       phone: phone,
       country: country,
@@ -78,7 +78,7 @@ function PersonalInfoScreen() {
 
       // update all input fields with the new data
       setFirstName(updateInfoMutation.data.response.first_name);
-      setSecondName(updateInfoMutation.data.response.second_name);
+      setLastName(updateInfoMutation.data.response.last_name);
       setEmail(updateInfoMutation.data.response.email);
       setPhone(updateInfoMutation.data.response.phone);
       setCountry(updateInfoMutation.data.response.country);
@@ -86,11 +86,12 @@ function PersonalInfoScreen() {
       setDescription(updateInfoMutation.data.response.description);
     }
 
+    // set back the input to the default value
     if (updateInfoMutation.isError) {
       console.log("Update user info failed");
       console.log(updateInfoMutation.error);
-       setFirstName(userInfo?.response?.first_name);
-      setSecondName(userInfo?.response?.second_name);
+      setFirstName(userInfo?.response?.first_name);
+      setLastName(userInfo?.response?.last_name);
       setEmail(userInfo?.response?.email);
       setPhone(userInfo?.response?.phone);
       setCountry(userInfo?.response?.country);
@@ -127,15 +128,15 @@ function PersonalInfoScreen() {
         label="Nom"
         marginBottom={14}
         state={enableInput}
-        value={firstName}
-        updateInput={setFirstName}
+        value={lastName}
+        updateInput={setLastName}
       />
       <Input
         label="Prénom"
         marginBottom={14}
         state={enableInput}
-        value={secondName}
-        updateInput={setSecondName}
+        value={firstName}
+        updateInput={setFirstName}
       />
       <Input
         label="Email"

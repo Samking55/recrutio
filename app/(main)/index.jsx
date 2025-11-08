@@ -55,7 +55,7 @@ export default function HomeScreen() {
       data={resumeList}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      numColumns={2} 
+      numColumns={2}
       columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 13 }}
       contentContainerStyle={{ padding: 14 }}
       ListHeaderComponent={
@@ -79,7 +79,7 @@ export default function HomeScreen() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 70
+            marginBottom: 70,
           }}
         >
           <Pressable
@@ -92,11 +92,15 @@ export default function HomeScreen() {
               borderRadius: 30,
               backgroundColor: colors.main,
             }}
-            onPress={()=>router.navigate("/(main)/find-resume")}
+            onPress={() => router.navigate("/(main)/find-resume")}
           >
-            <Text style={{
-              color: colors.white
-            }}>Voir plus</Text>
+            <Text
+              style={{
+                color: colors.white,
+              }}
+            >
+              Voir plus
+            </Text>
           </Pressable>
         </View>
       )}

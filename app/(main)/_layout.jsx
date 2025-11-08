@@ -4,18 +4,21 @@ import { View } from "react-native";
 import colors from "@/assets/styles/colors";
 import { House, FileText, Bell, UserRound, Hammer } from "lucide-react-native";
 
+
+
 function MainTabs() {
   // redirect function to profile page
   const toProfile = () => {
     router.push("/(profile)");
   };
 
-  const toNotifications = ()=>{};
+  const toNotifications = () => {};
 
   return (
     <Tabs
       initialRouteName="index"
       screenOptions={{
+        animation: "shift",
         title: "Recrutio",
         headerStyle: {
           elevation: 0,

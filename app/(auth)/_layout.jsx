@@ -9,7 +9,8 @@ export default function AuthLayout() {
         headerShadowVisible: false,
         headerBackVisible: false,
         headerTintColor: colors.main,
-        headerShown: false
+        headerShown: false,
+        animation: "fade_from_bottom",
       }}
     >
       <Stack.Screen name="index" />

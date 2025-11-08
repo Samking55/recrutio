@@ -1,6 +1,6 @@
 import RequestHandler from "../classes/request";
 
-const request = new RequestHandler("http://192.168.1.192:8000/api/v1/user");
+const request = new RequestHandler("http://10.203.157.217:8000/api/v1/user");
 
 const UserApi = {
   getUser: async () => {
